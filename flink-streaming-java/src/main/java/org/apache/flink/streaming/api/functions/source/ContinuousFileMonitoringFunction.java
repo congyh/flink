@@ -100,7 +100,7 @@ public class ContinuousFileMonitoringFunction<OUT>
 
 	private volatile boolean isRunning = true;
 
-	private transient ListState<Long> checkpointedState;
+	private transient ListState<Long> checkpointedState; // Note: List for future compatibility.
 
 	public ContinuousFileMonitoringFunction(
 		FileInputFormat<OUT> format,
@@ -141,11 +141,11 @@ public class ContinuousFileMonitoringFunction<OUT>
 		this.checkpointedState = context.getOperatorStateStore().getListState(
 			new ListStateDescriptor<>(
 				"file-monitoring-state",
-				LongSerializer.INSTANCE
+				LongSerializer.INSTANCE // Note: This is a timestamp of the largest modified time.
 			)
 		);
 
-		if (context.isRestored()) {
+		if (context.isRestored()) { // Note: If is continued from previously checkpoint.
 			LOG.info("Restoring state for the {}.", getClass().getSimpleName());
 
 			List<Long> retrievedStates = new ArrayList<>();
@@ -162,11 +162,11 @@ public class ContinuousFileMonitoringFunction<OUT>
 			if (retrievedStates.size() == 1 && globalModificationTime != Long.MIN_VALUE) {
 				// this is the case where we have both legacy and new state.
 				// The two should be mutually exclusive for the operator, thus we throw the exception.
-
+				// Note: This if for legacy code compatibility.
 				throw new IllegalArgumentException(
 					"The " + getClass().getSimpleName() + " has already restored from a previous Flink version.");
 
-			} else if (retrievedStates.size() == 1) {
+			} else if (retrievedStates.size() == 1) { // Note: This branch is where we focused.
 				this.globalModificationTime = retrievedStates.get(0);
 				if (LOG.isDebugEnabled()) {
 					LOG.debug("{} retrieved a global mod time of {}.",
@@ -174,7 +174,7 @@ public class ContinuousFileMonitoringFunction<OUT>
 				}
 			}
 
-		} else {
+		} else { // Note: Brand-new application.
 			LOG.info("No state to restore for the {}.", getClass().getSimpleName());
 		}
 	}
