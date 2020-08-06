@@ -270,7 +270,7 @@ public abstract class TwoPhaseCommitSinkFunction<IN, TXN, CONTEXT>
 			Map.Entry<Long, TransactionHolder<TXN>> entry = pendingTransactionIterator.next();
 			Long pendingTransactionCheckpointId = entry.getKey();
 			TransactionHolder<TXN> pendingTransaction = entry.getValue();
-			if (pendingTransactionCheckpointId > checkpointId) {
+			if (pendingTransactionCheckpointId > checkpointId) { // Note: All checkpointId > acknowledged checkpointId will be ignored. All checkpointId that before acknowledged id will be committed.
 				continue;
 			}
 
