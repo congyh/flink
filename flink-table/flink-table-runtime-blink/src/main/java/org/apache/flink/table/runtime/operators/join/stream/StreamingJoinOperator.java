@@ -179,7 +179,7 @@ public class StreamingJoinOperator extends AbstractStreamingJoinOperator {
 	 * @param otherSideStateView state of other side
 	 * @param inputIsLeft whether input side is left side
 	 */
-	private void processElement(
+	private void processElement( // Note: WARNING: NO NOT USE STREAMING JOIN UNLESS YOU KNOWN WHAT YOU ARE DOING!!!
 			BaseRow input,
 			JoinRecordStateView inputSideStateView,
 			JoinRecordStateView otherSideStateView,

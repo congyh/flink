@@ -1355,7 +1355,7 @@ public abstract class StreamExecutionEnvironment {
 														TypeInformation<OUT> typeInfo,
 														String sourceName,
 														FileProcessingMode monitoringMode,
-														long interval) {
+														long interval) { // Note: Critical function in continuous monitoring.
 
 		Preconditions.checkNotNull(inputFormat, "Unspecified file input format.");
 		Preconditions.checkNotNull(typeInfo, "Unspecified output type information.");

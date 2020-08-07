@@ -237,10 +237,10 @@ public class ContinuousFileMonitoringFunction<OUT>
 	private void monitorDirAndForwardSplits(FileSystem fs,
 											SourceContext<TimestampedFileInputSplit> context) throws IOException {
 		assert (Thread.holdsLock(checkpointLock));
-
-		Map<Path, FileStatus> eligibleFiles = listEligibleFiles(fs, new Path(path));
-		Map<Long, List<TimestampedFileInputSplit>> splitsSortedByModTime = getInputSplitsSortedByModTime(eligibleFiles);
-
+		// Note: TODO: We could aspect here to get the total time used for get new files.
+		Map<Path, FileStatus> eligibleFiles = listEligibleFiles(fs, new Path(path)); // Note: First list all files.
+		Map<Long, List<TimestampedFileInputSplit>> splitsSortedByModTime = getInputSplitsSortedByModTime(eligibleFiles); // Note: Second, sort all eligible fields by modTime.
+		// Note: The source is not used to read the files directly, it only used to collect the file metadata and forward it for succeeding operators to read. so it is ok to be at 1 parallelism.
 		for (Map.Entry<Long, List<TimestampedFileInputSplit>> splits: splitsSortedByModTime.entrySet()) {
 			long modificationTime = splits.getKey();
 			for (TimestampedFileInputSplit split: splits.getValue()) {
@@ -313,7 +313,7 @@ public class ContinuousFileMonitoringFunction<OUT>
 						files.put(filePath, status);
 					}
 				} else if (format.getNestedFileEnumeration() && format.acceptFile(status)){
-					files.putAll(listEligibleFiles(fileSystem, status.getPath()));
+					files.putAll(listEligibleFiles(fileSystem, status.getPath())); // Note: Use recurrence to detect nested-dir.
 				}
 			}
 			return files;

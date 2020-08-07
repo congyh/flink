@@ -207,7 +207,7 @@ abstract class TimeBoundedStreamJoin extends CoProcessFunction<BaseRow, BaseRow,
 			}
 		}
 		// Check if we need to cache the current row.
-		if (rightOperatorTime < rightQualifiedUpperBound) {
+		if (rightOperatorTime < rightQualifiedUpperBound) { // Note: If window is not passed, buffer left.
 			// Operator time of right stream has not exceeded the upper window bound of the current
 			// row. Put it into the left cache, since later coming records from the right stream are
 			// expected to be joined with it.

@@ -380,10 +380,10 @@ public class ContinuousFileReaderOperator<OUT> extends AbstractStreamOperator<OU
 			if (currentSplit != null) {
 				if (this.format instanceof CheckpointableInputFormat && this.isSplitOpen) {
 					Serializable formatState =
-						((CheckpointableInputFormat<TimestampedFileInputSplit, Serializable>) this.format).getCurrentState();
+						((CheckpointableInputFormat<TimestampedFileInputSplit, Serializable>) this.format).getCurrentState(); // Note: If input split not support checkpoint, then use exactly-once.
 					this.currentSplit.setSplitState(formatState);
 				}
-				snapshot.add(this.currentSplit);
+				snapshot.add(this.currentSplit); // Note: If input split not support checkpoint, then use at-least-once.
 			}
 			snapshot.addAll(this.pendingSplits);
 			return snapshot;
